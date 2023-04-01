@@ -30,6 +30,9 @@ const slackUpdateHandler: Handler = async (event: HandlerEvent, context: Handler
 };
 
 // 3 pm every day
-const handler = schedule('0 15 * * *', slackUpdateHandler)
+// const handler = schedule('0 15 * * *', slackUpdateHandler)
+
+// Every 6 hours
+const handler = schedule('0 */6 * * *', slackUpdateHandler)
 
 export { handler };
