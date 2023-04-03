@@ -1,6 +1,10 @@
 import PagerDuty from 'node-pagerduty';
 
 export const getOnCallFromSchedule = async (scheduleId: string) => {
+    if (!process.env.PAGERDUTY_API_USER_TOKEN) {
+        throw new Error('Missing PAGERDUTY_API_USER_TOKEN environment variable');
+    }
+    
     const apiToken = process.env.PAGERDUTY_API_USER_TOKEN;
     const pd = new PagerDuty(apiToken);
 
@@ -28,7 +32,3 @@ export const getOnCallFromSchedule = async (scheduleId: string) => {
 
     return person;
 };
-
-// (async () => {
-//     console.log(await getOnCallFromSchedule('PV06CS6'));
-// })();
