@@ -21,14 +21,14 @@ export const getOnCallFromSchedule = async (scheduleId: string) => {
     const responseData = JSON.parse(response.body);
 
     // Look at first layer's rendered schedule
-    const teamLayer = responseData.schedule.schedule_layers[0].rendered_schedule_entries;
+    const teamLayer = responseData?.schedule?.schedule_layers[0]?.rendered_schedule_entries;
 
-    const person = teamLayer.find((item) => {
+    const person = teamLayer?.find((item) => {
         const startDate = new Date(item.start);
         const endDate = new Date(item.end);
 
-        return startDate < dateNow && endDate > dateNow;
+        return dateNow >= startDate && dateNow <= endDate;
     });
 
-    return person;
+    return person ?? {};
 };
