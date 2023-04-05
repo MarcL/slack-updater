@@ -5,7 +5,20 @@ import { Handler, HandlerEvent, HandlerContext, schedule } from "@netlify/functi
 import { getOnCallFromSchedule } from '../../src/pagerduty'
 import { setSlackTopic, getSlackTopic } from '../../src/slack'
 
-const updateIfTopicUnchanged = async (topic: string, channel: string) => {
+const getSlackUserIdFromName = (name: string) : string => {
+    const slackUserIds : Record<string, string> = {
+        'Nick Taylor': '<@U039JSDDGSD>',
+        'Marc Littlemore': '<@U03EGNN3AAV>',
+        'Rob Stanford': '<@U0359H4DRFA>',
+        'Sarah Etter': '<@U039K8C44HH>',
+        'Lennart Jörgens': '<@U04MSL9CFA9>',
+        'Michal Piechowiak': '<@U04MMK0EHV4>'
+    };
+
+    return slackUserIds[name] ?? name;
+};
+
+const updateIfTopicUnchanged = async (topic: string, channel: string) : Promise<boolean> => {
     const oldTopic = await getSlackTopic(channel);
     if (oldTopic === topic) {
         console.log(`Not updating channel (${channel}) as topic is unchanged`);
@@ -32,8 +45,10 @@ const slackUpdateHandler: Handler = async (event: HandlerEvent, context: Handler
     
         const person = await getOnCallFromSchedule(firstResponderScheduleId);
         const {user: {summary: userName}} = person;
+
+        const userNameOrSlackId = getSlackUserIdFromName(userName);
     
-        const topic = `First responder: ${userName} (${new Date().toISOString()})`;
+        const topic = `First responder: ${userNameOrSlackId} (${new Date().toISOString()})`;
         const updated = updateIfTopicUnchanged(topic, slackChannel);
     
         return {
