@@ -1,6 +1,10 @@
 import PagerDuty from 'node-pagerduty';
 
 export const getOnCallFromSchedule = async (scheduleId: string) => {
+    if (!process.env.PAGERDUTY_API_USER_TOKEN) {
+        throw new Error('Missing PAGERDUTY_API_USER_TOKEN environment variable');
+    }
+    
     const apiToken = process.env.PAGERDUTY_API_USER_TOKEN;
     const pd = new PagerDuty(apiToken);
 
@@ -17,18 +21,14 @@ export const getOnCallFromSchedule = async (scheduleId: string) => {
     const responseData = JSON.parse(response.body);
 
     // Look at first layer's rendered schedule
-    const teamLayer = responseData.schedule.schedule_layers[0].rendered_schedule_entries;
+    const teamLayer = responseData?.schedule?.schedule_layers[0]?.rendered_schedule_entries;
 
-    const person = teamLayer.find((item) => {
+    const person = teamLayer?.find((item) => {
         const startDate = new Date(item.start);
         const endDate = new Date(item.end);
 
-        return startDate < dateNow && endDate > dateNow;
+        return dateNow >= startDate && dateNow <= endDate;
     });
 
-    return person;
+    return person ?? {};
 };
-
-// (async () => {
-//     console.log(await getOnCallFromSchedule('PV06CS6'));
-// })();
