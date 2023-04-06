@@ -4,12 +4,18 @@ import { setSlackTopic, getSlackTopic } from '../../src/api/slack'
 
 const getSlackUserIdFromName = (name: string) : string => {
     const slackUserIds : Record<string, string> = {
-        'Nick Taylor': '<@U039JSDDGSD>',
-        'Marc Littlemore': '<@U03EGNN3AAV>',
-        'Rob Stanford': '<@U0359H4DRFA>',
-        'Sarah Etter': '<@U039K8C44HH>',
-        'Lennart Jörgens': '<@U04MSL9CFA9>',
-        'Michal Piechowiak': '<@U04MMK0EHV4>'
+        // 'Nick Taylor': '<@U039JSDDGSD>',
+        // 'Marc Littlemore': '<@U03EGNN3AAV>',
+        // 'Rob Stanford': '<@U0359H4DRFA>',
+        // 'Sarah Etter': '<@U039K8C44HH>',
+        // 'Lennart Jörgens': '<@U04MSL9CFA9>',
+        // 'Michal Piechowiak': '<@U04MMK0EHV4>'
+        'Nick Taylor': '<@U6R63MMQD>',
+        'Marc Littlemore': '<@U6R63MMQD>',
+        'Rob Stanford': '<@U6R63MMQD>',
+        'Sarah Etter': '<@U6R63MMQD>',
+        'Lennart Jörgens': '<@U6R63MMQD>',
+        'Michal Piechowiak': '<@U6R63MMQD4>'
     };
 
     return slackUserIds[name] ?? name;

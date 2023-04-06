@@ -100,7 +100,7 @@ describe('slackUpdateHandler', () => {
     });
 
     test('should return expected slack user id instead of name if user is found in schedule and ID is found', async () => {
-        const expectedName = '<@U03EGNN3AAV>';
+        const expectedName = '<@U6R63MMQD>';
         const expectedResponse = {
             statusCode: 200,
             body: JSON.stringify({
