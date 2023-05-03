@@ -2,20 +2,18 @@ import { Handler, HandlerEvent, HandlerContext } from '@netlify/functions';
 import { getOnCallFromSchedule } from '../../src/api/pagerduty'
 import { setSlackTopic, getSlackTopic } from '../../src/api/slack'
 
+// TODO: Find a better way to map PagerDuty names to Slack to avoid hard-coding
 const getSlackUserIdFromName = (name: string) : string => {
+    // Use tag syntax with user ID so it links to the user
     const slackUserIds : Record<string, string> = {
-        // 'Nick Taylor': '<@U039JSDDGSD>',
-        // 'Marc Littlemore': '<@U03EGNN3AAV>',
-        // 'Rob Stanford': '<@U0359H4DRFA>',
-        // 'Sarah Etter': '<@U039K8C44HH>',
-        // 'Lennart Jörgens': '<@U04MSL9CFA9>',
-        // 'Michal Piechowiak': '<@U04MMK0EHV4>'
-        'Nick Taylor': '<@U6R63MMQD>',
-        'Marc Littlemore': '<@U6R63MMQD>',
-        'Rob Stanford': '<@U6R63MMQD>',
-        'Sarah Etter': '<@U6R63MMQD>',
-        'Lennart Jörgens': '<@U6R63MMQD>',
-        'Michal Piechowiak': '<@U6R63MMQD4>'
+        'Nick Taylor': '<@U039JSDDGSD>',
+        'Marc Littlemore': '<@U03EGNN3AAV>',
+        'Rob Stanford': '<@U0359H4DRFA>',
+        'Sarah Etter': '<@U039K8C44HH>',
+        'Lennart Jörgens': '<@U04MSL9CFA9>',
+        'Michal Piechowiak': '<@U04MMK0EHV4>',
+        'Tatyana Novell': '<@U03AULLNQUX>',
+        'Zach Leatherman': '<@UT3179JDA>',
     };
 
     return slackUserIds[name] ?? name;
