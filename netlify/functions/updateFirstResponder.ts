@@ -4,10 +4,7 @@ dotenv.config();
 import { schedule } from "@netlify/functions";
 import { slackUpdateHandler } from '../../src/handler/slackUpdate';
 
-// 3 pm every day
-// const handler = schedule('0 15 * * *', slackUpdateHandler)
-
-// Every 6 hours
-const handler = schedule('0 */6 * * *', slackUpdateHandler)
+// Check every 3 hours in case there are overrides
+const handler = schedule('0 */3 * * *', slackUpdateHandler)
 
 export { handler };
