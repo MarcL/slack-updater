@@ -1,7 +1,6 @@
 import { beforeEach, describe, expect, test, vi } from 'vitest';
 import PagerDuty from 'node-pagerduty';
 import { getOnCallFromSchedule } from './pagerduty';
-import { afterEach } from 'node:test';
 
 vi.mock('node-pagerduty', () => {
     return {
@@ -15,11 +14,9 @@ describe('pagerduty', () => {
     const defaultDate = new Date(2023, 3, 23);
     const defaultSchedule = {
         schedule: {
-            schedule_layers: [
-                {
-                    rendered_schedule_entries: []
-                }
-            ]
+            final_schedule: {
+                rendered_schedule_entries: []
+            }
         }
     };
     let mockGetSchedule;
@@ -87,13 +84,11 @@ describe('pagerduty', () => {
         };
         const expectedSchedule = {
             schedule: {
-                schedule_layers: [
-                    {
-                        rendered_schedule_entries: [
-                            expectedPerson
-                        ]
-                    }
-                ]
+                final_schedule: {
+                    rendered_schedule_entries: [
+                        expectedPerson
+                    ]
+                }
             }
         };
         mockGetSchedule = vi.fn().mockResolvedValue({
@@ -130,14 +125,12 @@ describe('pagerduty', () => {
 
         const expectedSchedule = {
             schedule: {
-                schedule_layers: [
-                    {
-                        rendered_schedule_entries: [
-                            firstPerson,
-                            expectedPerson
-                        ]
-                    }
-                ]
+                final_schedule: {
+                    rendered_schedule_entries: [
+                        firstPerson,
+                        expectedPerson
+                    ]
+                }
             }
         };
         mockGetSchedule = vi.fn().mockResolvedValue({
