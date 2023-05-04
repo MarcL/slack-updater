@@ -1,6 +1,6 @@
 import { Handler, HandlerEvent, HandlerContext } from '@netlify/functions';
-import { getOnCallFromSchedule } from '../../src/api/pagerduty'
-import { setSlackTopic, getSlackTopic } from '../../src/api/slack'
+import { getOnCallFromSchedule } from '../../src/api/pagerduty';
+import { setSlackTopic, getSlackTopic } from '../../src/api/slack';
 
 // TODO: Find a better way to map PagerDuty names to Slack to avoid hard-coding
 const getSlackUserIdFromName = (name: string) : string => {
