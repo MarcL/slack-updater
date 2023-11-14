@@ -27,25 +27,28 @@ const updateIfTopicChanged = async (
   }
 
   console.log(`Updating channel (${channel}) with topic: ${topic}`);
-  await setSlackTopic(topic, channel);
+  // await setSlackTopic(topic, channel);
 
   return true;
 };
 
-const slackUpdater = async (alwaysUpdate = false) => {
+const slackUpdater = async (
+  pdScheduleId = process.env.PAGER_DUTY_SCHEDULE_ID,
+  alwaysUpdate = false
+) => {
   try {
-    if (!process.env.PAGER_DUTY_SCHEDULE_ID) {
-      throw new Error('Missing PAGER_DUTY_SCHEDULE_ID environment variable');
-    }
-
     if (!process.env.SLACK_CHANNEL_ID) {
       throw new Error('Missing SLACK_CHANNEL_ID environment variable');
     }
 
-    const firstResponderScheduleId = process.env.PAGER_DUTY_SCHEDULE_ID;
     const slackChannel = process.env.SLACK_CHANNEL_ID;
 
-    const person = await getOnCallFromSchedule(firstResponderScheduleId);
+    let person;
+    try {
+      person = await getOnCallFromSchedule(pdScheduleId);
+    } catch (error) {
+      throw new Error('Error getting on call from schedule');
+    }
     const {
       user: { summary: userName },
     } = person;
@@ -59,15 +62,13 @@ const slackUpdater = async (alwaysUpdate = false) => {
       alwaysUpdate
     );
 
-    return {
-      statusCode: 200,
-      body: JSON.stringify({ status: 'OK', topic, updated }),
-    };
+    return { status: 'OK', message: topic, updated };
   } catch (error) {
     console.error(error.toString());
     return {
-      statusCode: 500,
-      body: JSON.stringify({ status: 'ERROR', error: error.toString() }),
+      status: 'ERROR',
+      message: error.toString(),
+      updated: false,
     };
   }
 };

@@ -21,10 +21,10 @@ export default async (req: Request, context: Context) => {
   // move code out of function handler
   if (command == '/oncall') {
     try {
-      await slackUpdater(true);
+      const { status, message } = await slackUpdater(scheduleId, true);
 
       slackResponse = slackMarkdownResponse(
-        `Finding on-call for schedule ${scheduleId}...`
+        `On-call for schedule ${scheduleId}: ${message}`
       );
     } catch (error) {
       console.error('Error updating Slack status.', error.toString());

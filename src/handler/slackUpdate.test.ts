@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, test, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 import { slackUpdater } from './slackUpdate';
 import { getOnCallFromSchedule } from '../api/pagerduty';
 import { getSlackTopic } from '../api/slack';
@@ -13,8 +13,8 @@ describe('slackUpdater', () => {
   const defaultTopic = '';
 
   beforeEach(() => {
-    process.env.PAGER_DUTY_SCHEDULE_ID = defaultPagerDutyScheduleId;
-    process.env.SLACK_CHANNEL_ID = defaultSlackChannelId;
+    vi.stubEnv('PAGER_DUTY_SCHEDULE_ID', defaultPagerDutyScheduleId);
+    vi.stubEnv('SLACK_CHANNEL_ID', defaultSlackChannelId);
 
     // @ts-ignore - Work out how to set the mocked type
     getOnCallFromSchedule.mockResolvedValue({
@@ -27,31 +27,15 @@ describe('slackUpdater', () => {
     getSlackTopic.mockResolvedValue(defaultTopic);
   });
 
-  test('should return expected response if PAGER_DUTY_SCHEDULE_ID environment variable is missing', async () => {
-    const expectedResponse = {
-      statusCode: 500,
-      body: JSON.stringify({
-        status: 'ERROR',
-        error: new Error(
-          'Missing PAGER_DUTY_SCHEDULE_ID environment variable'
-        ).toString(),
-      }),
-    };
-
-    delete process.env.PAGER_DUTY_SCHEDULE_ID;
-
-    await expect(slackUpdater()).resolves.toEqual(expectedResponse);
+  afterEach(() => {
+    vi.unstubAllEnvs();
   });
 
   test('should return expected response if SLACK_CHANNEL_ID environment variable is missing', async () => {
     const expectedResponse = {
-      statusCode: 500,
-      body: JSON.stringify({
-        status: 'ERROR',
-        error: new Error(
-          'Missing SLACK_CHANNEL_ID environment variable'
-        ).toString(),
-      }),
+      status: 'ERROR',
+      message: 'Error: Missing SLACK_CHANNEL_ID environment variable',
+      updated: false,
     };
 
     delete process.env.SLACK_CHANNEL_ID;
@@ -61,12 +45,9 @@ describe('slackUpdater', () => {
 
   test('should return expected response if user is found in schedule', async () => {
     const expectedResponse = {
-      statusCode: 200,
-      body: JSON.stringify({
-        status: 'OK',
-        topic: `First responder: ${defaultName}`,
-        updated: true,
-      }),
+      status: 'OK',
+      message: `First responder: ${defaultName}`,
+      updated: true,
     };
 
     await expect(slackUpdater()).resolves.toEqual(expectedResponse);
@@ -75,12 +56,9 @@ describe('slackUpdater', () => {
   test('should return expected response if user is found in schedule and topic is set to the same text', async () => {
     const expectedName = 'Expected Name';
     const expectedResponse = {
-      statusCode: 200,
-      body: JSON.stringify({
-        status: 'OK',
-        topic: `First responder: ${expectedName}`,
-        updated: false,
-      }),
+      status: 'OK',
+      message: `First responder: ${expectedName}`,
+      updated: false,
     };
 
     // @ts-ignore - Work out how to set the mocked type
@@ -99,12 +77,9 @@ describe('slackUpdater', () => {
   test('should return expected slack user id instead of name if user is found in schedule and ID is found', async () => {
     const expectedName = '<@U03EGNN3AAV>';
     const expectedResponse = {
-      statusCode: 200,
-      body: JSON.stringify({
-        status: 'OK',
-        topic: `First responder: ${expectedName}`,
-        updated: true,
-      }),
+      status: 'OK',
+      message: `First responder: ${expectedName}`,
+      updated: true,
     };
 
     // @ts-ignore - Work out how to set the mocked type
@@ -113,6 +88,19 @@ describe('slackUpdater', () => {
         summary: 'Marc Littlemore',
       },
     });
+
+    await expect(slackUpdater()).resolves.toEqual(expectedResponse);
+  });
+
+  test('should return expected error if schedule is not found', async () => {
+    const expectedResponse = {
+      status: 'ERROR',
+      message: 'Error: Error getting on call from schedule',
+      updated: false,
+    };
+
+    // @ts-ignore - Work out how to set the mocked type
+    getOnCallFromSchedule.mockRejectedValue();
 
     await expect(slackUpdater()).resolves.toEqual(expectedResponse);
   });
