@@ -11,6 +11,7 @@ export default async (req: Request, context: Context) => {
   const parameterText = await req.text();
   const params = new URLSearchParams(parameterText);
   const command = params.get('command');
+  const scheduleId = params.get('text') || process.env.PAGER_DUTY_SCHEDULE_ID;
 
   // TODO: Verify request signature
 
@@ -22,7 +23,9 @@ export default async (req: Request, context: Context) => {
     try {
       await slackUpdater(true);
 
-      slackResponse = slackMarkdownResponse('Updating on-call...');
+      slackResponse = slackMarkdownResponse(
+        `Finding on-call for schedule ${scheduleId}...`
+      );
     } catch (error) {
       console.error('Error updating Slack status.', error.toString());
 
