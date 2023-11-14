@@ -1,4 +1,3 @@
-import { Handler, HandlerEvent, HandlerContext } from '@netlify/functions';
 import { getOnCallFromSchedule } from '../../src/api/pagerduty';
 import { setSlackTopic, getSlackTopic } from '../../src/api/slack';
 
@@ -15,25 +14,25 @@ const getSlackUserIdFromName = (name: string): string => {
   return slackUserIds[name] ?? name;
 };
 
-const updateIfTopicUnchanged = async (
+const updateIfTopicChanged = async (
   topic: string,
-  channel: string
+  channel: string,
+  alwaysUpdate: boolean
 ): Promise<boolean> => {
   const oldTopic = await getSlackTopic(channel);
-  if (oldTopic === topic) {
+
+  if (!alwaysUpdate && oldTopic === topic) {
     console.log(`Not updating channel (${channel}) as topic is unchanged`);
     return false;
   }
 
+  console.log(`Updating channel (${channel}) with topic: ${topic}`);
   await setSlackTopic(topic, channel);
 
   return true;
 };
 
-const slackUpdateHandler: Handler = async (
-  event: HandlerEvent,
-  context: HandlerContext
-) => {
+const slackUpdater = async (alwaysUpdate = false) => {
   try {
     if (!process.env.PAGER_DUTY_SCHEDULE_ID) {
       throw new Error('Missing PAGER_DUTY_SCHEDULE_ID environment variable');
@@ -54,7 +53,11 @@ const slackUpdateHandler: Handler = async (
     const userNameOrSlackId = getSlackUserIdFromName(userName);
 
     const topic = `First responder: ${userNameOrSlackId}`;
-    const updated = await updateIfTopicUnchanged(topic, slackChannel);
+    const updated = await updateIfTopicChanged(
+      topic,
+      slackChannel,
+      alwaysUpdate
+    );
 
     return {
       statusCode: 200,
@@ -69,4 +72,4 @@ const slackUpdateHandler: Handler = async (
   }
 };
 
-export { slackUpdateHandler };
+export { slackUpdater };
