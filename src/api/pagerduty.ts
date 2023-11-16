@@ -1,4 +1,4 @@
-import PagerDuty from 'node-pagerduty';
+import { api } from '@pagerduty/pdjs';
 
 export const getOnCallFromSchedule = async (scheduleId: string) => {
   if (!process.env.PAGERDUTY_API_USER_TOKEN) {
@@ -6,7 +6,7 @@ export const getOnCallFromSchedule = async (scheduleId: string) => {
   }
 
   const apiToken = process.env.PAGERDUTY_API_USER_TOKEN;
-  const pd = new PagerDuty(apiToken);
+  const pd = api({ token: apiToken });
 
   const dateNow = new Date();
   const dateNowIso = dateNow.toISOString();
@@ -17,12 +17,15 @@ export const getOnCallFromSchedule = async (scheduleId: string) => {
     since: dateNowIso,
   };
 
-  const response = await pd.schedules.getSchedule(scheduleId, options);
-  const responseData = JSON.parse(response.body);
+  //   const response = await pd.schedules.getSchedule(scheduleId, options);
+  const { data } = await pd({
+    endpoint: `/schedules/${scheduleId}`,
+    method: 'GET',
+    data: options,
+  });
 
   // Look at first layer's rendered schedule
-  const teamLayer =
-    responseData?.schedule?.final_schedule?.rendered_schedule_entries;
+  const teamLayer = data?.schedule?.final_schedule?.rendered_schedule_entries;
 
   const person = teamLayer?.find((item) => {
     const startDate = new Date(item.start);
