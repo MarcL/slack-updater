@@ -34,5 +34,22 @@ export const getOnCallFromSchedule = async (scheduleId: string) => {
     return dateNow >= startDate && dateNow <= endDate;
   });
 
+  // Add in email address
+  if (person) {
+    try {
+      const { data: userData } = await pd({
+        endpoint: `/users/${person.user.id}`,
+        method: 'GET',
+      });
+
+      const {
+        user: { email },
+      } = userData;
+      person.user.email = email;
+    } catch (error) {
+      console.error(`Couldn't retrieve email for ${person.user.id}`);
+    }
+  }
+
   return person ?? {};
 };

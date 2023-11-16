@@ -27,7 +27,7 @@ const updateIfTopicChanged = async (
   }
 
   console.log(`Updating channel (${channel}) with topic: ${topic}`);
-  // await setSlackTopic(topic, channel);
+  await setSlackTopic(topic, channel);
 
   return true;
 };
