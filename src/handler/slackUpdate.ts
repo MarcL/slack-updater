@@ -9,6 +9,9 @@ const getSlackUserIdFromName = (name: string): string => {
     'Rob Stanford': '<@U0359H4DRFA>',
     'Michal Piechowiak': '<@U04MMK0EHV4>',
     'Tatyana Novell': '<@U03AULLNQUX>',
+    'Matt Kane': '<@U01UB7B4BE3>',
+    'Philippe Serhal': '<@U06NUCL9T8A>',
+    'Mateusz Bocian': '<@U06Q2C0QT6G>',
   };
 
   return slackUserIds[name] ?? name;
