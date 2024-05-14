@@ -26,12 +26,13 @@ export const getSlackTopic = async (channel: string): Promise<string> => {
   return topic;
 };
 
-export const getUserByEmail = async (emailAddress: string): Promise<string> => {
-  const client = createSlackClient();
+// TODO: Not sure if we can do this due to lack of Slack permissions
+// export const getUserByEmail = async (emailAddress: string): Promise<string> => {
+//   const client = createSlackClient();
 
-  const user = await client.users.lookupByEmail({
-    email: emailAddress,
-  });
+//   const user = await client.users.lookupByEmail({
+//     email: emailAddress,
+//   });
 
-  return user;
-};
+//   return user;
+// };
